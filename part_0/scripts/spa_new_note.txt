@@ -1,0 +1,10 @@
+browser->form submit handler: trigger the handler
+note over form submit handler:
+append the new note to
+the original list of notes
+end note
+note over form submit handler:
+re-render the view locally 
+end note
+form submit handler->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: HTTP status code 201
