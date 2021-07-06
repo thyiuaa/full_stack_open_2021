@@ -1,40 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
+import axios from 'axios'
+
+import Records from './components/Records'
+import Form from './components/Form'
+import Filter from './components/Filter'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ filterString, setFilterString ] = useState('')
   const [ showRecords, setShowRecords ] = useState(persons)
+  const [ filterString, setFilterString ] = useState('')
 
-  const handleInputNameChange = (event) => setNewName(event.target.value)
-  const handleInputNumberChange = (event) => setNewNumber(event.target.value)
-  const handleFormSubmit = (event) => {
-    event.preventDefault()
-    if (persons.map(person => person.name).includes(newName)) {
-      window.alert(`${newName} is already added to phonebook`)
-      return
-    }
-    if (newName !== '') {
-      const personObj = { name: newName, number: newNumber }
-      const newPersons = persons.concat(personObj)
-      setPersons(newPersons)
-      setNewName('')
-      setNewNumber('')
-      displayRecords(filterString, newPersons)
-    }
-  }
-  const handleFilterStringChange = (event) => {
-    setFilterString(event.target.value)
-    displayRecords(event.target.value, persons)
-  }
+  useEffect(() => {
+    const dest = "http://localhost:3001/persons"
+    axios
+      .get(dest)
+      .then(response => {
+        console.log("data fetched!", response.data)
+        setPersons(response.data)
+        displayRecords('', response.data)
+      })
+  }, [])
 
   const displayRecords = (filterString, persons) => {
     if (filterString === '') {
       setShowRecords(persons)
     } else {
+      const regex = new RegExp(filterString, 'i')
       const filteredPersons = persons.filter(person => {
-        return (person.name.search(filterString) !== -1)
+        return (person.name.search(regex) !== -1)
       })
       setShowRecords(filteredPersons)
     }
@@ -43,27 +36,21 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input value={filterString} onChange={handleFilterStringChange}/>
-      </div>
+      <Filter
+        filterString={filterString}
+        setFilterString={setFilterString}
+        persons={persons}
+        displayRecords={displayRecords}
+      />
       <h2>add a new</h2>
-      <form onSubmit={handleFormSubmit}>
-        <div>
-          name: <input value={newName} onChange={handleInputNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleInputNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form
+        persons={persons}
+        setPersons={setPersons}
+        displayRecords={displayRecords}
+        filterString={filterString}
+      />
       <h2>Numbers</h2>
-      {
-        showRecords.map((record) => {
-          return <p key={record.name}>{record.name} {record.number}</p>
-        })
-      }
+      <Records records={showRecords} />
     </div>
   )
 }
