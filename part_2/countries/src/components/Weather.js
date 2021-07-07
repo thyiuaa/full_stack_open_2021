@@ -4,15 +4,15 @@ import axios from "axios";
 import './Weather.css'
 
 const Weather = ({ country }) => {
-    const [ newCountry, setNewCountry ] = useState('')
+    const [ newCountry, setNewCountry ] = useState({ name:'', capital:'' })
     const [ localWeather, setLocalWeather ] = useState({})
     
-    if (newCountry !== country.name) setNewCountry(country.name)
+    if (newCountry.name !== country.name) setNewCountry({ name: country.name, capital:country.capital })
 
     useEffect(() => {
         console.log('getting weather info...')
         const api_key = process.env.REACT_APP_API_KEY
-        const dest = 'http://api.weatherstack.com/current?access_key='+api_key+'&query='+country.capital+', '+country.name
+        const dest = 'http://api.weatherstack.com/current?access_key='+api_key+'&query='+newCountry.capital+', '+newCountry.name
         axios
             .get(dest)
             .then(response => {
@@ -21,15 +21,13 @@ const Weather = ({ country }) => {
             })
     }, [ newCountry ])
 
-    if (localWeather.weather_icons === undefined) {
+    if ( !localWeather.hasOwnProperty('weather_icons') ) {
+        console.log('localWeather is empty');
         return (
-            <div>
-                <h2>Weather in {country.capital}</h2>
-                <p>temperature: {localWeather.temperature} Celcius</p>
-                <p>wind: {localWeather.wind_speed} mph direction {localWeather.wind_dir}</p>
-            </div>
+            <></>
         )
     } else {
+        console.log('localWeather is NOT empty', localWeather);
         return (
             <div>
                 <h2>Weather in {country.capital}</h2>
