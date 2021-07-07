@@ -1,9 +1,8 @@
 import React from 'react'
 
-const Filter = ({ filterString, setFilterString, persons, displayRecords }) => {
+const Filter = ({ filterString, setFilterString }) => {
   const handleFilterStringChange = (event) => {
     setFilterString(event.target.value)
-    displayRecords(event.target.value, persons)
   }
 
   return (
