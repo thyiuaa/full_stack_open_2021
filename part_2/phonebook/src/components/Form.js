@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import personsService from '../services/persons'
 
-const Form = ({ persons, setPersons }) => {
+const Form = ({ persons, setPersons, setNotiObj }) => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
 
@@ -14,16 +14,13 @@ const Form = ({ persons, setPersons }) => {
         .update(personUpdate.id, personObj)
         .then(personUpdated => {
           console.log('Record update SUCCESSFUL!', personUpdated);
-          setPersons(persons.map(person => {
-            if ( person.id === personUpdated.id ) {
-              return personUpdated
-            } else {
-              return person
-            }
-          }))
+          setPersons(persons.map(person => (person.id === personUpdated.id) ? personUpdated : person))
         })
         .catch(error => {
           console.log('Record update FAILED!', error);
+          setNotiObj({ message: `Information of ${personUpdate.name} has already been removed from server`, color: 'red' })
+          setTimeout(() => { setNotiObj({message: null}) }, 5000)
+          setPersons(persons.filter(person => person.id !== personUpdate.id))
         })
     } else {
       console.log('User cancelled record update.');
@@ -47,6 +44,8 @@ const Form = ({ persons, setPersons }) => {
           setPersons(persons.concat(newPerson))
           setNewName('')
           setNewNumber('')
+          setNotiObj({ message: `Added ${newPerson.name}`, color: 'green' })
+          setTimeout(() => { setNotiObj({message: null}) }, 5000)
         })
     }
   }

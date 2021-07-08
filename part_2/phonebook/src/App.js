@@ -3,12 +3,15 @@ import React, { useState , useEffect} from 'react'
 import Records from './components/Records'
 import Form from './components/Form'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
+
 import personsService from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ showRecords, setShowRecords ] = useState(persons)
   const [ filterString, setFilterString ] = useState('')
+  const [ notiObj, setNotiObj ] = useState({ message: null , color:'' })
 
   useEffect(() => {
     personsService
@@ -24,9 +27,7 @@ const App = () => {
       setShowRecords(persons)
     } else {
       const regex = new RegExp(filterString, 'i')
-      const filteredPersons = persons.filter(person => {
-        return (person.name.search(regex) !== -1)
-      })
+      const filteredPersons = persons.filter(person => person.name.search(regex) !== -1)
       setShowRecords(filteredPersons)
     }
   }, [ filterString, persons ])
@@ -34,6 +35,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notiObj.message} color={notiObj.color} />
       <Filter
         filterString={filterString}
         setFilterString={setFilterString}
@@ -42,6 +44,7 @@ const App = () => {
       <Form
         persons={persons}
         setPersons={setPersons}
+        setNotiObj={setNotiObj}
       />
       <h2>Numbers</h2>
       <Records
