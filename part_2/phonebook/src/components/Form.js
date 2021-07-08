@@ -6,15 +6,40 @@ const Form = ({ persons, setPersons }) => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
 
+  const updatePerson = ( personUpdate ) => {
+    const confirmUpdate = window.confirm(`${personUpdate.name} is already added to phonebook, replace the old number with a new one?`)
+    if ( confirmUpdate ) {
+      const personObj = { ...personUpdate, number: newNumber }
+      personsService
+        .update(personUpdate.id, personObj)
+        .then(personUpdated => {
+          console.log('Record update SUCCESSFUL!', personUpdated);
+          setPersons(persons.map(person => {
+            if ( person.id === personUpdated.id ) {
+              return personUpdated
+            } else {
+              return person
+            }
+          }))
+        })
+        .catch(error => {
+          console.log('Record update FAILED!', error);
+        })
+    } else {
+      console.log('User cancelled record update.');
+    }
+  }
+
   const handleInputNameChange = (event) => setNewName(event.target.value)
   const handleInputNumberChange = (event) => setNewNumber(event.target.value)
   const handleFormSubmit = (event) => {
     event.preventDefault()
-    if (persons.map(person => person.name).includes(newName)) {
-      window.alert(`${newName} is already added to phonebook`)
-      return
-    }
-    if ( (newName !== '') && (newNumber !== '') ) {
+    const samePersonIndex = persons
+                        .map(person => person.name)
+                        .findIndex(name => name.match(newName) !== null)
+    if ( samePersonIndex !== -1 ) {
+      updatePerson(persons[samePersonIndex])
+    }else if ( (newName !== '') && (newNumber !== '') ) {
       const personObj = { name: newName, number: newNumber }
       personsService
         .create(personObj)

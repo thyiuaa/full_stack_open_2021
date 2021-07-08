@@ -3,13 +3,17 @@ import React from 'react'
 import Button from './Button'
 import personsService from '../services/persons'
 
-const Records = ({ records }) => {
+const Records = ({ records, persons, setPersons }) => {
   const deleteRecord = ( record ) => {
     if( window.confirm(`Delete ${record.name}`) ) {
       personsService
         .remove(record.id)
         .then(response => {
-          console.log('A record is deleted')
+          console.log('Record deletion SUCCESSFUL!', response)
+          setPersons(persons.filter(person => person.id !== record.id))
+        })
+        .catch(error => {
+          console.log('Record deletion FAILED!', error)
         })
     } else {
       console.log('User cancelled record deletion.');

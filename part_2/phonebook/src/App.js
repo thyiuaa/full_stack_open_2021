@@ -9,7 +9,6 @@ const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ showRecords, setShowRecords ] = useState(persons)
   const [ filterString, setFilterString ] = useState('')
-  const [ recordDeleted, setRecordDeleted ] = useState(true)
 
   useEffect(() => {
     personsService
@@ -45,7 +44,11 @@ const App = () => {
         setPersons={setPersons}
       />
       <h2>Numbers</h2>
-      <Records records={showRecords} />
+      <Records
+        records={showRecords}
+        persons={persons}
+        setPersons={setPersons}
+      />
     </div>
   )
 }
