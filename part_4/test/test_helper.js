@@ -1,4 +1,9 @@
+const bcrypt = require('bcrypt')
+
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+const saltRounds = 10
 
 const initialBlogs = [
   {
@@ -40,6 +45,17 @@ const newBlogWithoutUrl = {
   likes: 6
 }
 
+const newUserNames = [
+  'user1',
+]
+const newUsers = [
+  {
+    username: newUserNames[0],
+    name: 'name1',
+    password: 'password1'
+  }
+]
+
 const singleBlogId = async () => {
   let blog = new Blog(newBlog)
   await blog.save()
@@ -56,6 +72,19 @@ const nonExistingId = async () => {
   return id
 }
 
+const insertNewUsers = async () => {
+  for (const newUser of newUsers) {
+    const { password } = newUser
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const user = new User({
+      ...newUser,
+      password: hashedPassword
+    })
+
+    await user.save()
+  }
+}
+
 const update_likes = {
   likes: 1
 }
@@ -68,5 +97,9 @@ module.exports = {
   newBlogWithoutUrl,
   singleBlogId,
   nonExistingId,
-  update_likes
+  update_likes,
+
+  // usres
+  newUserNames,
+  insertNewUsers,
 }

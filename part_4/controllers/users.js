@@ -11,6 +11,28 @@ usersRouter.get('/', async (request, response) => {
   response.json(users)
 })
 
+const isPasswordValid = (password) => {
+  if (!password || password.length < 3) {
+    return false
+  }
+
+  return true
+}
+
+const isUsernameValid = async (username) => {
+  if (!username || username.length < 3) {
+    return false
+  }
+
+  const isUserExist = await User.exists({ username })
+
+  return isUserExist
+}
+
+const isNewUserValid = async (username, password) => {
+  return await isUsernameValid(username) && isPasswordValid(password)
+}
+
 usersRouter.post('/', async (request, response) => {
   console.log({
     body: request.body
@@ -32,6 +54,12 @@ usersRouter.post('/', async (request, response) => {
     name === undefined ||
     password === undefined
   ) {
+    response.status(400).end()
+
+    return
+  }
+
+  if (!isNewUserValid(username, password)) {
     response.status(400).end()
 
     return

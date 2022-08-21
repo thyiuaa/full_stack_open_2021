@@ -43,7 +43,7 @@ describe('4.9', () => {
 })
 
 describe('4.10', () => {
-  test('total number of blogs increased by 1', async () => {
+  test.skip('total number of blogs increased by 1', async () => {
     await api.post('/api/blogs')
       .send(helper.newBlog)
     const response = await api.get('/api/blogs')
